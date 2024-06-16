@@ -3,8 +3,8 @@ import pytz
 from urllib import request
 import xml.etree.ElementTree as ET
 
-from holidays import romania_holidays
-from exceptions import DateRangeError, SymbolError, DateError
+from .holidays import romania_holidays
+from .exceptions import DateRangeError, SymbolError, DateError
 
 
 non_banking_days = []
@@ -244,7 +244,7 @@ class Xrates():
 
     def get_xrate(self,
                   symbols_filter: list = None,
-                  start_date: datetime.date = datetime.datetime.today(),
+                  start_date: datetime.date = datetime.date.today(),
                   end_date: datetime.date = None) -> dict:
         """
         Get the xrate for a list of symbols for a given date or period.
