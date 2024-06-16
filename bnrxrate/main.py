@@ -4,7 +4,7 @@ from urllib import request
 import xml.etree.ElementTree as ET
 
 from holidays import romania_holidays
-from exceptions import DateRangeInvalid, SymbolNotAvailable
+from exceptions import DateRangeError, SymbolError, DateError
 
 
 non_banking_days = []
@@ -105,6 +105,8 @@ class Bnrxrates():
             Return:
                 date (datetime.date): object representing previous banking day
         """
+        if str(date) < "2008-01-03":
+            raise(DateError("No data before 2008-01-03.", date))
         previous_day = date - datetime.timedelta(1)
         if self.is_banking_day(previous_day):
             return previous_day
@@ -126,6 +128,8 @@ class Bnrxrates():
         day if the date is not a banking day or the time is before the
         update time.
         """
+        if str(date) < "2008-01-03":
+            raise(DateError("No data before 2008-01-03.", date))
         if not self.is_banking_day(date):
             date = self._get_previous_banking_day(date)
         else:
@@ -148,8 +152,14 @@ class Bnrxrates():
         """
         Get the xrates for a specific period.
         """
+        if str(start_date) < "2008-01-03":
+            raise(DateError("No data before 2008-01-03.", start_date))
+        if str(start_date) > str(datetime.date.today()):
+            raise(DateError("Start date is in the future.", start_date))
+        if str(end_date) > str(datetime.date.today()):
+            raise(DateError("End date is in the future.", end_date))
         if end_date < start_date:
-            raise DateRangeInvalid('End date sould be after start date.', start_date, end_date)
+            raise DateRangeError('End date should be after start date.', start_date, end_date)
         if end_date == datetime.date.today() and self._today_not_updated():
             if self.after_update_time():
                 self._get_today(end_date.year)
@@ -176,7 +186,7 @@ class Bnrxrates():
         filtered = {}
         for symbol in symbols:
                 if symbol not in data.keys():
-                    raise SymbolNotAvailable('Invalid symbol', symbol, date)
+                    raise SymbolError('Invalid symbol', symbol, date)
         for symbol, value in data.items():
             if symbol in symbols:
                 filtered[symbol] = value
@@ -194,7 +204,7 @@ class Bnrxrates():
         for date, values in data.items():
             for symbol in symbols:
                 if symbol not in values.keys():
-                    raise SymbolNotAvailable('Invalid symbol', symbol, date)
+                    raise SymbolError('Invalid symbol', symbol, date)
             filtered[date] = {}
             for symbol, value in values.items():
                 if symbol in symbols:
@@ -251,7 +261,7 @@ class Bnrxrates():
             symbols_filter = [symbol.upper() for symbol in symbols_filter]
         if end_date:
             if end_date < start_date:
-                raise DateRangeInvalid('End date sould be after start date.', start_date, end_date)
+                raise DateRangeError('End date sould be after start date.', start_date, end_date)
             all_xrates = self._get_period_xrate(start_date, end_date)
             xrates = self._filter_period_symbols(symbols_filter, all_xrates)
         else:
