@@ -29,7 +29,6 @@ class Xrates():
         """
         Fetch the xml data at url.
         """
-        print('making a request................................................................')
         with request.urlopen(url) as response:
             xml_content = response.read().decode('utf-8')
         return xml_content
