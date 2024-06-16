@@ -1,9 +1,7 @@
 import datetime
 import pytz
 from urllib import request
-import os
 import xml.etree.ElementTree as ET
-import json
 
 from holidays import romania_holidays
 from exceptions import DateRangeInvalid, SymbolNotAvailable
@@ -267,7 +265,7 @@ class Bnrxrates():
             symbols_filter: list = None) -> dict:
         """
         Get the xrates for a list of symbols but only if it was updated
-        today.
+        today. Else return None.
             Params:
                 symbols_filter (list): list of symbols
             Return:
@@ -277,8 +275,6 @@ class Bnrxrates():
         today = datetime.date.today()
         if not self.after_update_time() or not self.is_banking_day(today):
             return None
-        if str(today) not in self.cached.keys():
-            self._get_today()
         all_xrates = self._get_date_xrate(today)
         xrates = self._filter_date_symbols(symbols_filter, all_xrates, today)
         return xrates
@@ -301,20 +297,9 @@ class Bnrxrates():
 if __name__ == "__main__":
     bnr = Bnrxrates()
 
-    # start_date = datetime.date(2020, 1, 1)
-    # end_date = datetime.date(2024, 6, 15)
+    start_date = datetime.date(2024, 1, 1)
+    end_date = datetime.date(2024, 6, 15)
+    data = bnr.get_xrate(['EUR'], start_date, end_date)
+    print(data)
 
-    # import time
-    # t0 = time.time()
-    # data = bnr.get_xrate(['EUR'], start_date, end_date)
-    # t1 = time.time()
-    # print(f'{(t1-t0) * 1000} ms')
-
-    # t0 = time.time()
-    # data = bnr.get_xrate(['EUR'], start_date, end_date)
-    # t1 = time.time()
-    # print(f'{(t1-t0) * 1000} ms')
-
-    # print(bnr.get_xrate(['EUR'], start_date))
-
-    print(bnr.get_today_update())
+    print(f'\ntoday update: {bnr.get_today_update()}')
