@@ -14,7 +14,7 @@ for year in romania_holidays.keys():
             non_banking_days.append(datetime.date(year, month, day))
 
 
-class Bnrxrates():
+class Xrates():
 
     def __init__(self):
         self.year_base_url = 'https://bnr.ro/files/xml/years/nbrfxrates-year-.xml'
@@ -305,7 +305,7 @@ class Bnrxrates():
 
     
 if __name__ == "__main__":
-    bnr = Bnrxrates()
+    bnr = Xrates()
 
     start_date = datetime.date(2024, 1, 1)
     end_date = datetime.date(2024, 6, 15)

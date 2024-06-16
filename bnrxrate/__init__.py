@@ -1,1 +1,1 @@
-from .main import Bnrxrates
+from .main import Xrates
